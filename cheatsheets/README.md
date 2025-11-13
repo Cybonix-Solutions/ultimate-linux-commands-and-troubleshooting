@@ -8,11 +8,11 @@ Concise, high-signal reminders for shortcuts, flags, and workflows that you need
 
 | File | Focus |
 |------|-------|
-| `tmux-cheatsheet.md` | Multiplexer shortcuts, pane/window management, session tricks. |
-| `systemd-cheatsheet.md` | Service management, unit queries, journald snippets. |
-| `ssh-cheatsheet.md` | Connection patterns, config snippets, port forwarding. |
-| `bash-shortcuts.md` | Shell navigation, readline bindings, history controls. |
-| `ftp-cheatsheet.md` | Core FTP commands for anonymous and authenticated sessions. |
+| [`tmux-cheatsheet.md`](tmux-cheatsheet.md) | Multiplexer shortcuts, pane/window management, session tricks. |
+| [`systemd-cheatsheet.md`](systemd-cheatsheet.md) | Service management, unit queries, journald snippets. |
+| [`ssh-cheatsheet.md`](ssh-cheatsheet.md) | Connection patterns, config snippets, port forwarding. |
+| [`bash-shortcuts.md`](bash-shortcuts.md) | Shell navigation, readline bindings, history controls. |
+| [`ftp-cheatsheet.md`](ftp-cheatsheet.md) | Core FTP commands for anonymous and authenticated sessions. |
 
 Add additional sheets when a topic grows beyond a couple of bullets inside other docs.
 

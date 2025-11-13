@@ -14,12 +14,12 @@ Curated command references grouped by topic, focusing on practical usage, flags,
 
 | File | Focus |
 |------|-------|
-| `filesystem.md` | Disks, partitioning, mounts, quotas. |
-| `networking.md` | Interfaces, routing, diagnostics, VPN tooling. |
-| `processes-and-services.md` | Process inspection, systemd/service helpers. |
-| `packages-and-repos.md` | Package managers, repositories, build/install helpers. |
-| `users-and-permissions.md` | Accounts, groups, sudo, ACLs, SELinux helpers. |
-| `misc.md` | Commands that do not neatly fit other categories. |
+| [`filesystem.md`](filesystem.md) | Disks, partitioning, mounts, quotas. |
+| [`networking.md`](networking.md) | Interfaces, routing, diagnostics, VPN tooling. |
+| [`processes-and-services.md`](processes-and-services.md) | Process inspection, systemd/service helpers. |
+| [`packages-and-repos.md`](packages-and-repos.md) | Package managers, repositories, build/install helpers. |
+| [`users-and-permissions.md`](users-and-permissions.md) | Accounts, groups, sudo, ACLs, SELinux helpers. |
+| [`misc.md`](misc.md) | Commands that do not neatly fit other categories. |
 
 ## Adding New Content
 

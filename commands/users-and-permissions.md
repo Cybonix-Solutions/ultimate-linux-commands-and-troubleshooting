@@ -132,3 +132,21 @@ sudo usermod -aG myproject user              # Append group(s) without dropping 
 
 - Remember `-a` only works together with `-G`; without it the previous supplementary list is overwritten.
 - After group changes, tell the user to re-login or run `newgrp <group>` to pick up permissions immediately.
+
+## Command: whoami
+
+**Category:** Identity  
+**Distros:** All  
+**Summary:** Prints the effective username for the current shell, making it easy to confirm sudo/su context.
+
+### Common usages
+
+```bash
+whoami                                          # Show your current login identity
+sudo whoami                                     # Verify that sudo elevated you to root
+```
+
+### Tips & troubleshooting
+
+- Combine with `id` to see UID/GID numbers and supplementary groups when debugging permission issues.
+- Inside scripts, `whoami` helps gate dangerous actions (`[ "$(whoami)" = "root" ] || exit 1`).

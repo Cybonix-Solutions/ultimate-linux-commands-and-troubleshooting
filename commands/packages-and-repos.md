@@ -41,3 +41,21 @@ fwupdmgr update                # Apply all applicable updates
 
 - Ensure `fwupd` service is running; on servers without GUI you may need to start it manually.
 - Updates usually require a reboot; schedule maintenance windows accordingly.
+
+## Command: yum
+
+**Category:** Package management  
+**Distros:** RHEL/CentOS/Fedora (DNF-compatible)  
+**Summary:** Installs, updates, or removes RPM packages while handling dependencies from configured repos.
+
+### Common usages
+
+```bash
+sudo yum -y install net-tools                   # Pull in legacy toolkit (provides netstat, etc.)
+sudo yum update                                 # Apply all available package updates
+```
+
+### Tips & troubleshooting
+
+- Use `yum provides <file>` to discover which package ships a missing binary.
+- `yum history undo <id>` quickly reverts a problematic transaction if a new package breaks workloads.

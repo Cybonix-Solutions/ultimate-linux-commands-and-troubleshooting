@@ -1,0 +1,57 @@
+==============
+My Ubuntu CMDs
+==============
+
+fwupdmgr get-upgrades  # To upgrade firmware when device has them available
+----------------------------------------------------------------------------------------------------|
+lsb_release -a	#Shows all available LSB (Linux Standard Base) information.
+----------------------------------------------------------------------------------------------------|
+#The Ubuntu command similar to yum provides is apt-file search
+sudo apt update
+sudo apt install apt-file
+sudo apt-file update
+apt-file search <filename_pattern>
+----------------------------------------------------------------------------------------------------|
+#S.M.A.R.T. (Self-Monitoring, Analysis, and Reporting Technology) is built into most modern drives (HDD and SSD) and can predict many failures before they happen.
+
+sudo apt update && sudo apt install smartmontools
+sudo smartctl -H /dev/sda  # Check the overall health status: (Replace /dev/sda with your device name)
+sudo smartctl -t short /dev/sda  # Runs a quick test (minutes)
+sudo smartctl -t long /dev/sda   # Runs a comprehensive test (hours)
+sudo badblocks -v /dev/sda1  # Run a read-only scan (safer for data on a mounted drive)
+----------------------------------------------------------------------------------------------------|
+#The fsck utility checks and optionally repairs filesystem errors (like corrupt files or directory inconsistencies), which are different from physical bad sectors.
+
+sudo fsck -f /dev/sda1  # You cannot run on primary drive.  Drive must be unmounted.
+----------------------------------------------------------------------------------------------------|
+<Not Ubuntu Specific>
+Using the "gh cli" to add an existing local project folder to GitHub
+====================================================================
+sudo apt install gh git  # Install gh and git if not already installed
+sudo gh auth login   # You should be logged into your GitHub acct via cli, but if not run this.
+
+#Initialize Git in a project folder
+# Replace 'path/to/your/project' with the actual path to your folder
+
+cd path/to/your/project
+
+git init   # Initialize a new Git repository
+git add .  # Tell Git to track all the files in your project
+git commit -m "Initial project commit"  # "commit" these files with a descriptive message. A commit is like saving a snapshot of your project at a specific point in time.
+
+#Create a new repository on GitHub using the gh command and link your local project to it.
+
+gh repo create
+
+#When prompted, select "Push an existing local repository to GitHub" and follow the instructions to set the name and visibility (public, private, etc.).
+
+gh repo create --source=. --<public|private> --push --remote=origin
+
+Ongoing Maintenance
+-------------------
+git status				# To check the status of your files
+git add .				# To stage changes
+git commit -m "Describe your changes"	# To commit changes
+git push -u <branch name>		# To push your local commits to GitHub
+----------------------------------------------------------------------------------------------------|
+

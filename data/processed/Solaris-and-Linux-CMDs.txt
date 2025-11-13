@@ -1,0 +1,357 @@
+### Solaris CMD to Report Service Status ###
+'svcs'
+Using the 'l' and 'p' options will show a lot of info about the service.
+
+'svcs -lp <service>'
+
+### Solaris CMD to Manipulate Service Instances ###
+'svcadm'
+Using the 'v' option prints actions verbosely to standard output.
+
+'/usr/sbin/svcadm -v [enable|disable|restart|refresh|clear|mark] <service>
+
+---------------------------------------------------------------------------------------------------------
+Pure grep Solution:
+
+A pure grep solution might involve using grep's -o option along with a positive lookahead assertion in a Perl-Compatible Regular Expression (PCRE), but as mentioned earlier, grep does not support removing the matched pattern before printing. grep with PCRE (-P option) can match the text following your pattern but doesn't exclude the pattern itself without external help:
+
+bash
+Copy code
+grep -oP 'pattern\K.*' file.txt
+
+The \K is a PCRE feature that resets the starting point of the reported match. This can be used to not include the pattern itself in the match, effectively acting like a lookbehind assertion. Note that \K support depends on your grep version and might not be available in all environments.
+---------------------------------------------------------------------------------------------------------
+### List Services on RHEL6 ###
+chkconfig --list.
+---------------------------------------------------------------------------------------------------------
+# cat /etc/ntp.conf | grep -v ^#  <-- grepping a file throwing out all comments
+
+ntpdate -q <server ip>  <--- Using NTP to query server
+
+edit:  vi /etc/ntp.conf
+---------------------------------------------------------------------------------------------------------
+# If unable to mount external drive...
+
+cat /etc/modprobe.d/usb-storage.conf
+# comment out "install usb-storage /bin/true"
+---------------------------------------------------------------------------------------------------------
+dmidecode -t system  # This is a great cmd to find make, model, serial and bios version
+---------------------------------------------------------------------------------------------------------
+vi /etc/rear/local.conf         # configure Relax and Recover (ReaR)
+mount c1nfs10g:/flar_recovery   # mount partition to save backup to
+/usr/sbin/rear -d -v mkbackup   # making a backup
+/var/lib/rear/output/           # ReaR's default output location
+
+# To schedule ReaR to regularly create a rescue system using the cron job scheduler, 
+# add the following line to the /etc/crontab file:
+
+#minute hour day_of_month month day_of_week root /usr/sbin/rear mkrescue
+0 22 * * 1-5 root /usr/sbin/rear mkrescue # creates a rescue system at 22:00 every weekday
+
+### RELAX AND RECOVER (ReaR) SCHEDULED BACKUP JOB. ###
+0 23 * * 1-5 root /usr/sbin/rear -d -v mkbackup
+### END OF RELAX AND RECOVER (ReaR) SCHEDULED BACKUP JOB. ###
+
+---------------------------------------------------------------------------------------------------------
+# tar up script for physical servers
+
+# filename:tar_rear_iso.sh 
+tar -zcvf /home/recovery/<foldername>-`(date +%y-%m-%d)`.tar.gz /home/recovery/<foldername>
+chown admin:admin /home/recovery/*.gz
+---------------------------------------------------------------------------------------------------------
+### Using DataLocker External Hard Drive To Copy And Move Files ###
+
+Check "/etc/modprobe.d/usb-storage.conf" to ensure usb drive will work!!
+
+# Before attaching the drive, run "dmesg --follow", then attach drive to watch it report which file the
+# kernel maps the drive to.
+dmesg --follow
+<plug-in drive>
+
+# Once you know the drive the kernel maps to, use "fdisk -l"
+fdisk <file name referenced by kernel>
+p ... to print current partition(s)
+d ... to remove current partition(s)
+	1 ... to delete partition 1
+	2 ... to delete partition 2
+n ... to create a new partition
+p ... to create a primary partition
+1 ... to create partition 1
+Enter
+Enter
+w .. to write the changes to the disk.
+
+# The partition should be created. Create the file system for the partition.
+mkfs -t ext4 <file name referenced by kernel>
+
+# Mount the new file system on a directory (/mnt for example).
+mount <file name referenced by kernel> /mnt
+
+# Copy contents... then unmount.
+Umount /mnt
+
+# Mount drive as READ ONLY
+mount -o ro <file name referenced by kernel> /mnt
+
+# Confirm that the drive is mounted as READ ONLY
+cat /proc/mounts | grep mnt
+---------------------------------------------------------------------------------------------------------
+# Resetting Locked Local Accts
+
+pam_tally2 --user <acct> --reset
+faillock --user <acct> --reset
+chage -l
+---------------------------------------------------------------------------------------------------------
+# Looping over array indices
+for i in ${!myarray[@]}; do echo ${myarray[$i]}; done
+
+# This array script will read input from terminal,(delineate with spaces) and print array elements.
+#!/bin/bash
+
+read line
+list=(${line})
+for e in ${list[@]}; do
+echo $e
+done
+
+# This array script will read input from terminal,(delineate with spaces) and print the array indices.
+#!/bin/bash
+
+read line
+list=(${line})
+for i in ${!list[@]}; do
+echo $i
+done
+---------------------------------------------------------------------------------------------------------
+# A sed cmd to re-number a list of numbers (0 thru x) removing the 0 and adding 1 (1 thru x).
+sed -r 's/(.*)(\Disc )([0-9]+)(.*)/echo "\1\2$((\3+1))\4"/ge' sedthis.txt
+
+---------------------------------------------------------------------------------------------------------
+### To break the GRUB RHEL6 & 7. Follow the steps given below: ###
+
+
+1: Reboot the machine: As soon as the bootloader comes up with the selection screen, quickly tap the up and down arrows up and down to pause the countdown.
+
+2: Select the kernel you want to boot into, and hit 'e': This will take you into a screen where you can edit the grub bootloader script.
+
+3: Find the line that refers to the kernel: There will be a series of 'boot parameters' here: these are instructions passed during the loading of the kernel.
+
+    For RHEL/CentOS 7, the line starts with 'linux16'.
+
+    For RHEL/Centos 8x, and Fedora the line starts with 'linux'.
+
+4: Add 'rd.break' at the end of that line (There are other things you can do here, but for now, this is all you need) [ Note: This change is temporary ].
+
+5: Now hit Ctrl-x to run the edited bootloader script.
+
+6: You’ll boot to a 'rescue' prompt that looks like this: switch_root:/#.
+
+7: Remount the root partition in read-write mode so that you can run commands. Enter the following: 'mount -o remount rw /sysroot' and then hit ENTER.
+
+8: Now type 'chroot /sysroot' and hit enter. This will change you into the sysroot (/) directory, and make that your path for executing commands. 
+
+9: Now you can simply change the password for root using the passwd command. 'passwd root'
+
+10: Next, before you reboot, you will need to make sure that SELinux allows the file changes. At the prompt ,enter: 'touch /.autorelabel'. This will signal SELinux on the next reboot that the filesystem has changed (the changed password) and allow the change to be loaded. This will cause the whole filesystem to be relabeled which might take a while, depending on the size of the filesystem and the speed of the machine, so be aware of this possibility.
+
+Type exit to leave the chroot environment and enter reboot.
+
+
+---------------------------------------------------------------------------------------------------------
+
+-= INXI is da shit~! =-
+
+inxi is a command line system information script built for console and IRC. It is also used a debugging tool  for  forum  technical  support  to quickly  ascertain  users'  system configurations and hardware. inxi shows system hardware, CPU, drivers, Xorg, Desktop, Kernel, gcc version(s), Processes, RAM usage, and a wide variety of other useful information.
+
+-A, --audio          Audio/sound devices(s), driver, running sound servers.
+-B, --battery        System battery info, including charge, condition voltage (if critical), plus extra info (if battery present/detected).
+-C, --cpu            CPU output, including per CPU clock speed and max CPU speed (if available).
+-D, --disk           Hard Disk info, including total storage and details for each disk. Disk total used percentage includes swap partition size(s).
+-m, --memory         Memory (RAM) data. Requires root. Numbers of devices (slots) supported and individual memory devices (sticks of memory etc).
+-N, --network        Network device(s), driver.
+-o, --unmounted      Unmounted partition info (includes UUID and Label if available).
+-P, --partitions     Basic partition info. Shows, if detected: / /boot /home /opt /tmp /usr /usr/home /var /var/log /var/tmp.
+-S, --system         System info: host name, kernel, desktop environment (if in X/Wayland), distro.
+-t, --processes      Processes. Requires extra options: c (CPU), m (memory), cm (CPU+memory). If followed by numbers 1-x, shows that number of processes for each type (default: 5; if in 			     IRC, max: 5).
+
+---------------------------------------------------------------------------------------------------------
+### How to burn files to a DVD or Blu-Ray Disc ###
+
+growisofs -Z /dev/dvdrw -R -J /some/files
+
+# How to burn a Blueray from cli
+# Note that -dvd-compat closes the disk in write-once context (DVD+R or DVD-R).
+# Also Note:- You can't run as sudo.  You need to root (su - root).
+
+growisofs -dvd-compat -Z /dev/sr1=/home/jorimoloye/Downloads/<image>.iso
+
+# Blanking DVD+RW discs
+dvd+rw-format -blank /dev/cdrw
+---------------------------------------------------------------------------------------------------------
+### Displaying Comprehensive User Information ###
+
+# Displaying basic information about all accounts on the system
+lslogins
+
+# Displaying detailed information about a single account
+lslogins <acctname>
+
+# Displaying specific information about a group of users
+lslogins --logins=0,500,jdoe,esmith > --output=UID,USER,LAST-LOGIN,LAST-TTY,FAILED-LOGIN,FAILED-TTY
+
+# Displaying information about supplementary groups and password expiration for all user accounts
+lslogins --user-accs --supp-groups --acc-expiration
+---------------------------------------------------------------------------------------------------------
+Anonymous FTP:- At times you may wish to copy files from a remote machine on which you do not have a loginname. This can be done using anonymous FTP. 
+
+### Common FTP Commands ###
+
+? -	to request help or information about the FTP commands
+ascii -	to set the mode of file transfer to ASCII
+	(this is the default and transmits seven bits per character)
+binary-	to set the mode of file transfer to binary
+	(the binary mode transmits all eight bits per byte and thus provides less chance of a transmission error and must be used to transmit files other than ASCII files)
+bye -	to exit the FTP environment (same as quit)
+cd -	to change directory on the remote machine
+close -	to terminate a connection with another computer
+  	close brubeck -- closes the current FTP connection with brubeck,but still leaves you within the FTP environment.
+delete- to delete (remove) a file in the current remote directory (same as rm in UNIX)
+get -	to copy one file from the remote machine to the local machine
+  	get ABC DEF --	copies file ABC in the current remote directory to (or on top of) a file named DEF in your current local directory.
+  	get ABC --	copies file ABC in the current remote directory to (or on top of) a file with the same name, ABC, in your current local directory.
+help -	to request a list of all available FTP commands
+lcd -	to change directory on your local machine (same as UNIX cd)
+ls -	to list the names of the files in the current remote directory
+mkdir -	to make a new directory within the current remote directory
+mget -	to copy multiple files from the remote machine to the local machine;you are prompted for a y/n answer before transferring each file
+  	mget * 	copies all the files in the current remote directory to your current local directory, using the same filenames. Notice the use of the wild card character, *.
+mput -	to copy multiple files from the local machine to the remote machine; you are prompted for a y/n answer before transferring each file
+open -	to open a connection with another computer 
+open brubeck --	opens a new FTP connection with brubeck; you must enter a username and password for a brubeck account
+      (unless it is to be an anonymous connection).
+put -	to copy one file from the local machine to the remote machine
+pwd -	to find out the pathname of the current directory on the remote machine
+quit- 	to exit the FTP environment (same as bye)
+rmdir -	to to remove (delete) a directory in the current remote directory
+---------------------------------------------------------------------------------------------------------
+### Create New User with Temporary Password on Linux ###
+
+# Create new user and home directory
+useradd -m USERNAME
+
+# Set temporary password for new user
+passwd USERNAME
+chage -d 0 USERNAME
+
+---------------------------------------------------------------------------------------------------------
+### Adding an Existing User to an Existing Group ###
+
+Use the usermod utility to add an already existing user to an already existing group.
+
+Various options of usermod have different impact on user’s primary group and on his or her supplementary groups.
+
+To override user’s primary group, run the following command as root:
+
+~]# usermod -g group_name user_name
+
+To override user’s supplementary groups, run the following command as root:
+
+~]# usermod -G group_name1,group_name2,... user_name
+
+Note that in this case all previous supplementary groups of the user are replaced by the new group or several new groups.
+
+To add one or more groups to user’s supplementary groups, run one of the following commands as root:
+
+~]# usermod -aG group_name1,group_name2,... user_name
+~]# usermod --append -G group_name1,group_name2,... user_name
+
+Note that in this case the new group is added to user’s current supplementary groups.
+
+### Creating Group Directories ###
+
+System administrators usually like to create a group for each major project and assign people to the group when they need to access that project’s files. With this traditional scheme, file management is difficult; when someone creates a file, it is associated with the primary group to which they belong. When a single person works on multiple projects, it becomes difficult to associate the right files with the right group. However, with the UPG scheme, groups are automatically assigned to files created within a directory with the setgid bit set. The setgid bit makes managing group projects that share a common directory very simple because any files a user creates within the directory are owned by the group that owns the directory.
+
+For example, a group of people need to work on files in the /opt/myproject/ directory. Some people are trusted to modify the contents of this directory, but not everyone.
+
+1: As root, create the /opt/myproject/ directory by typing the following at a shell prompt:
+
+~]# mkdir /opt/myproject
+
+2: Add the myproject group to the system:
+
+~]# groupadd myproject
+
+3: Associate the contents of the /opt/myproject/ directory with the myproject group:
+
+~]# chown root:myproject /opt/myproject
+
+Allow users in the group to create files within the directory and set the setgid bit:
+
+~]# chmod 2775 /opt/myproject
+
+At this point, all members of the myproject group can create and edit files in the /opt/myproject/ directory without the administrator having to change file permissions every time users write new files. To verify that the permissions have been set correctly, run the following command:
+
+~]# ls -ld /opt/myproject
+
+drwxrwsr-x. 3 root myproject 4096 Mar 3 18:31 /opt/myproject
+Add users to the myproject group:
+
+usermod -aG myproject username
+
+
+Run the command:
+$ sudo du -a /dir/ | sort -n -r | head -n 20
+
+OR
+$ sudo du -a / 2>/dev/null | sort -n -r | head -n 20
+
+
+
+SOLUTION VERIFIED - Updated July 11 2019 at 5:52 AM - English 
+Environment
+Red Hat Enterprise Linux (RHEL) 5, 6, 7, 8
+Logical Volume Manager (LVM) 2
+
+Issues:-
+--------------------------------------------------------------------------------------------------------------------------------------
+* What is the procedure to grow an existing filesystem based on Logical Volume?
+* How can I extend my logical volume and the filesystem in the command line?
+* I have extended a logical volume using lvextend which shows the extension in volume group vgdisplay but df isn't reflecting the size, am I missing anything?
+* How do I grow an ext3/ext4/XFS filesystem on LVM?
+* How do I increase my filesystem on the fly, without unmounting it ?
+* We are using LVM for mounting the filesystem, how can we use the lvextend command to extend the volume group and increase the filesystem size?
+* What are the steps to extend a filesystem after a LUN capacity has been extended?
+* What is the procedure to increase the size of an LVM2 logical volume and resize its filesystem?
+* I need to expand a filesystem created on LVM partition, does the filesystem need to be unmounted when expanding it or can I resize it online?
+* How to grow an ext filesystem with pvcreate, vgextend, lvextend and resize2fs commands
+How to grow an XFS filesystem with pvcreate, vgextend, lvextend and xfs_growfs commands
+I have extended the logical volume size with lvextend command but the size of the file system its not reflecting this change
+Resolution
+The following are sample steps to extend a volume group, a logical volume, and a filesystem.
+NOTE: Red Hat recommends that all critical data be backed up and verified before making any changes to the underlying storage as an unforeseen problem might occur.
+--------------------------------------------------------------------------------------------------------------------------------------
+
+1. Create a physical volume from a free disk or partition (e.g. /dev/sdc1 as a partition)
+
+Raw
+    # pvcreate /dev/sdc1
+2. Extend the volume group (/dev/sdc1 is an existing physical volume path).
+
+Raw
+    # vgextend vgdata /dev/sdc1
+3. Extend the logical volume and resize underlying filesystem together(/dev/vgdata/lvdata is the existing logical volume path), which will be extended in 125 GB.
+
+Raw
+    # lvextend -r -L +125G /dev/vgdata/lvdata
+4. If the filesystem you are extending is a GFS filesystem, see "How do I grow a GFS2 file-system on RHEL?".
+
+For more details, refer the tech brief How to Increase the Size of an LVM2 Logical Volume which walks through an example in which unpartitioned disk space is added to an existing volume group in order to extend a logical volume and the corresponding file system, while they are active.
+Root Cause
+Logical Volume Manager 2 (LVM2) allows you to aggregate physical storage devices into volume groups. You can then divide that aggregated space into one or more logical volumes.
+
+Once created, logical volumes can be extended to utilize unused space within the volume group, allowing the file system residing on the logical volume to be extended as well. However, if all of the physical storage in a volume group is already occupied by logical volumes, then more physical volumes must be added before the logical volume can be extended.
+
+Note: If you have not run resize2fs or xfs_growfs on the block device after extending the Logical Volume you will see the file system size as the same as before extending it. In order to use the extended space on the LVM run resize2fs or xfs_growfs to fill up the partition with the existing file system. After resizing the file system you will now be able to see the extended size of the file system in df command output.
+
+
+

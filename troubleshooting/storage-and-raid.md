@@ -53,3 +53,38 @@ sudo xfs_growfs /mountpoint           # XFS
 ```
 
 - Always take a tested backup (e.g., `rear -d -v mkbackup`) before manipulating storage layers, and document the change in your ticket with the exact commands run.
+
+## Scenario: /var partition is full and needs more space
+
+**Symptoms:** `/var` hits 100%, package installs fail, or services logging to `/var/log` crash.  
+**Applies to:** Ubuntu/Debian systems using either LVM or single-disk root partitions.
+
+### Investigation
+1. Map current mounts with `df -h` and `lsblk`; note whether `/var` is a distinct device (e.g., `/dev/mapper/vgname-var`) or just part of `/`.
+2. If `/var` is an LVM logical volume, check remaining volume group headroom with `sudo vgs` or `sudo vgdisplay <vgname>`.
+3. If `/var` lives inside the root partition, confirm you have contiguous unallocated disk space or can reclaim space by moving swap/other partitions with a live environment.
+
+### Resolution
+- **When `/var` is its own LVM logical volume:**
+
+```bash
+sudo lvextend -L +5G /dev/mapper/vgname-var     # or: lvextend -l +100%FREE ...
+sudo resize2fs /dev/mapper/vgname-var           # use xfs_growfs for XFS
+df -h /var
+```
+
+  - Replace `vgname-var` with the actual LV name, and only run `xfs_growfs /var` if the filesystem is XFS. Keep the filesystem mounted; most ext4/xfs volumes grow online.
+
+- **When `/var` is part of `/`:**
+  - Boot from trusted live media (Ubuntu installer, GParted Live) so the root filesystem is unmounted.
+  - Use `gparted`, `fdisk`, or `cfdisk` to extend the root partition into adjacent unallocated space (move swap if it blocks expansion).
+  - Apply the changes, reboot normally, then grow the filesystem:
+
+```bash
+sudo resize2fs /dev/sdaX   # substitute the real root partition ID
+df -h /
+```
+
+  - If resizing still fails, double-check for snapshots or filesystem errors (`sudo fsck -f /dev/sdaX`) before attempting again.
+
+- In all cases, capture a verified backup before editing partitions and note the exact commands in the change record.

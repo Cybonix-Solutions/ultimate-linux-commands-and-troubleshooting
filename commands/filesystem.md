@@ -87,6 +87,7 @@ cp -a /etc/skel/. /home/newuser/               # Recursively copy while preservi
 ```bash
 sudo du -a /dir/ | sort -n -r | head -n 20      # Show top 20 space hogs underneath /dir
 sudo du -sh /var/log/*                          # Human-readable size per log directory
+du -hsx * | sort -rh | head -10                 # Quick top 10 in the current directory
 ```
 
 ### Tips & troubleshooting
@@ -129,6 +130,25 @@ sudo fsck -n /dev/sdb1       # Report issues without modifying anything
 
 - Never run `fsck` against a mounted, in-use root filesystem—boot from rescue media or switch to single-user mode.
 - Use after `smartctl`/`badblocks` confirm the underlying media is healthy; otherwise prioritize data recovery.
+
+## Command: growisofs
+
+**Category:** Optical media  
+**Distros:** All  
+**Summary:** Burns ISO images to DVD/Blu-ray drives and blanks rewritable media from the command line.
+
+### Common usages
+
+```bash
+sudo growisofs -Z /dev/dvdrw -R -J /some/files              # Create a new ISO from a directory tree
+sudo growisofs -dvd-compat -Z /dev/sr1=~/Downloads/image.iso # Burn an ISO to Blu-ray/DVD and close the disc
+sudo dvd+rw-format -blank /dev/cdrw                          # Blank a rewritable DVD+RW
+```
+
+### Tips & troubleshooting
+
+- Run as root; the tool needs direct device access and can fail under sudo if device permissions are restricted.
+- Use `-dvd-compat` when writing once so the disc finalizes properly; omit it for appendable media.
 
 ## Command: grep
 

@@ -1,0 +1,47 @@
+Classic /var/log/ Files
+RHEL still ships rsyslog; some services write here directly.
+ ******************************************************************************
+| Log File                    | Typical Searches                               |
+| --------------------------- | ---------------------------------------------- |
+| `/var/log/messages`         | `grep -i "kernel:.*error" /var/log/messages`   |
+| `/var/log/secure`           | `awk '$3=="sshd" && /Failed/' /var/log/secure` |
+| `/var/log/cron`             | `grep "$(date +%b' '%d)" /var/log/cron`        |
+| Compressed archives (`.gz`) | `zgrep -i panic /var/log/messages-*.gz`        |
+| Watch live growth           | `tail -F /var/log/secure`                      |
+ ******************************************************************************
+         Pro tip: keep sudo less +F handy for scrollable follow mode.
+
+
+
+journalctl — the systemd Journal
+ ************************************************************************************************************************************************************************************************
+| Search Goal                           | One-liner                                                   | Notes                                              |         |                           |
+| ------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------- | ------- | ------------------------- |
+| **Show entire journal, newest first** | `journalctl -e --no-pager`                                  | `-e` jumps to end                                  |         |                           |
+| **Boot #-1 only**                     | `journalctl -b -1`                                          | `-b` counts from current boot = 0                  |         |                           |
+| **Between two dates**                 | `journalctl --since "2025-06-20" --until "2025-06-25"`      | Natural language accepted (e.g., `"2 hours ago"`). |         |                           |
+| **By service**                        | `journalctl -u sshd`                                        | Add `--follow` to tail live.                       |         |                           |
+| **By PID 1234**                       | `journalctl _PID=1234`                                      | Underscore fields are journal keys.                |         |                           |
+| **By priority (errors only)**         | `journalctl -p err..alert`                                  | Range syntax.                                      |         |                           |
+| **Containing text**                   | \`journalctl                                                | grep -Ei "disk                                     | nvme"\` | Works with any pipe tool. |
+| **Kernel ring buffer**                | `journalctl -k -p warning`                                  | Replaces `dmesg` for persistent storage.           |         |                           |
+| **Disk usage summary**                | `journalctl --disk-usage`                                   | Shows on-disk size.                                |         |                           |
+| **Export to text file**               | `journalctl -u firewalld --since yesterday > firewalld.log` | Good for sharing.                                  |         |                           |
+| **Structured JSON for scripts**       | `journalctl -o json-pretty -n 50`                           | Use `jq` to parse.                                 |         |                           |
+ ************************************************************************************************************************************************************************************************
+
+
+# Human-readable recommendations for fixes
+sealert -a /var/log/audit/audit.log
+
+
+# Human-readable recommendations for fixes
+sealert -a /var/log/audit/audit.log
+
+
+
+FirewallD & nftables
+====================
+
+# Show runtime firewall logs (journal is default sink)
+journalctl -u firewalld -g "IN=eth0"

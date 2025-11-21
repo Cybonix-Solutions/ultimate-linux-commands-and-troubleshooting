@@ -57,6 +57,7 @@ sudo dmidecode -t memory            # Inspect DIMM population and speeds
 
 - Requires root because it queries `/dev/mem`; run in change windows if production policies restrict it.
 - Redirect output to a ticket for future audits (`sudo dmidecode -t system > /tmp/hw.txt`).
+- On Solaris hosts without dmidecode, reach for `prtdiag`, `prtconf`, and `psrinfo` to capture comparable chassis and CPU data.
 
 ## Command: echo
 
@@ -112,6 +113,24 @@ export PATH="$HOME/.local/bin:$PATH"            # Prepend a directory to PATH
 - Put persistent exports inside `~/.bash_profile` (login shells) or `~/.bashrc` (interactive shells).
 - Use `unset VAR` to remove a value entirely rather than exporting an empty string.
 
+## Command: fips-mode-setup
+
+**Category:** Security hardening  
+**Distros:** RHEL/CentOS 8/9  
+**Summary:** Toggles FIPS 140-2 compliant crypto mode on supported RHEL systems.
+
+### Common usages
+
+```bash
+sudo fips-mode-setup --enable          # Enable FIPS mode (requires reboot)
+sudo fips-mode-setup --disable         # Disable and return to standard crypto policies
+```
+
+### Tips & troubleshooting
+
+- Reboot after switching modes so the kernel boots with the correct crypto modules.
+- Verify status with `fips-mode-setup --check` before and after maintenance windows.
+
 ## Command: gh
 
 **Category:** Developer tooling  
@@ -150,6 +169,25 @@ grep -oP '(?<=pattern).*' file.txt     # Equivalent when your grep supports look
 - `\K` is faster than variable-length lookbehind and works even when lookbehind is unsupported.
 - Validate your grep build (`grep --version`) because BusyBox and macOS/BSD `grep` lack `-P`.
 
+## Command: inxi
+
+**Category:** Hardware inventory  
+**Distros:** All  
+**Summary:** Console system profiler that prints hardware, driver, and system stats in a single, readable report.
+
+### Common usages
+
+```bash
+inxi -S                                    # OS, kernel, desktop info
+sudo inxi -Fxxxz                           # Full hardware report with extra detail (omit -z to show serials)
+inxi -m                                    # Memory slot population and speeds
+```
+
+### Tips & troubleshooting
+
+- Run with sudo to expose disk, sensor, and memory details that require elevated permissions.
+- Filter output by class (`inxi -N` for network, `inxi -D` for disks) when you only need one subsystem.
+
 ## Command: lsb_release
 
 **Category:** System info  
@@ -185,6 +223,24 @@ man 5 passwd                                     # Open a specific manual sectio
 
 - Use `/pattern` inside `man` to search within the page; `n` jumps to the next match.
 - `man -k keyword` (equivalent to `apropos`) searches page descriptions when you are unsure of the command name.
+
+## Command: openssl x509
+
+**Category:** TLS inspection  
+**Distros:** All  
+**Summary:** Displays certificate metadata so you can quickly confirm issuer, subject, SANs, and validity windows.
+
+### Common usages
+
+```bash
+openssl x509 -in /etc/pki/katello/certs/katello-apache.crt -text -noout \
+  | grep -E "Issuer:|Subject:|CA:|DNS:|Digital|Not Before|Not After"
+```
+
+### Tips & troubleshooting
+
+- Add `-purpose sslserver` to validate intended usage or `-checkend 86400` to test expiry within the next day.
+- When certificates chain incorrectly, compare the `Issuer`/`Subject` fields against the CA bundle you expect.
 
 ## Command: printenv
 

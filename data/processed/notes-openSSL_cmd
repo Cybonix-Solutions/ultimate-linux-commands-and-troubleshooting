@@ -1,0 +1,2 @@
+# Printing the details of an ssl certificate
+openssl x509 -in /etc/pki/katello/certs/katello-apache.crt -test | grep '(Issuer:|Subject:|CA:|DNS:|Digital|Not Before|Not After)'

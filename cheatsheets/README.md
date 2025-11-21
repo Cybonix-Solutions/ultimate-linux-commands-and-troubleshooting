@@ -10,6 +10,7 @@ Concise, high-signal reminders for shortcuts, flags, and workflows that you need
 |------|-------|
 | [`tmux-cheatsheet.md`](tmux-cheatsheet.md) | Multiplexer shortcuts, pane/window management, session tricks. |
 | [`systemd-cheatsheet.md`](systemd-cheatsheet.md) | Service management, unit queries, journald snippets. |
+| [`logging-cheatsheet.md`](logging-cheatsheet.md) | Legacy log locations and `journalctl` filters for RHEL/systemd. |
 | [`ssh-cheatsheet.md`](ssh-cheatsheet.md) | Connection patterns, config snippets, port forwarding. |
 | [`bash-shortcuts.md`](bash-shortcuts.md) | Shell navigation, readline bindings, history controls. |
 | [`ftp-cheatsheet.md`](ftp-cheatsheet.md) | Core FTP commands for anonymous and authenticated sessions. |

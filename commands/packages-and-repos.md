@@ -42,6 +42,40 @@ fwupdmgr update                # Apply all applicable updates
 - Ensure `fwupd` service is running; on servers without GUI you may need to start it manually.
 - Updates usually require a reboot; schedule maintenance windows accordingly.
 
+## Command: subscription-manager
+
+**Category:** Subscription/registration  
+**Distros:** RHEL/CentOS  
+**Summary:** Registers systems to Red Hat Customer Portal or Satellite, manages entitlement certificates, and imports offline subscriptions.
+
+### Common usages
+
+```bash
+sudo subscription-manager clean                                       # Remove cached identity data
+sudo yum -y remove katello-ca-consumer*                               # Drop stale Satellite certs
+curl -o /var/tmp/katello-cert.rpm http://<satellite>/pub/katello-cert.rpm
+sudo yum -y install /var/tmp/katello-cert.rpm --nogpgcheck             # Install the CA from Satellite
+sudo subscription-manager register --org=<ORG> --activationkey=<KEY>   # Register with an activation key
+
+sudo subscription-manager import --certificate=/tmp/<entitlement>.pem  # Offline import of a downloaded cert
+```
+
+### Tips & troubleshooting
+
+- If DNS is missing, add the Satellite host to `/etc/hosts` before registering.
+- For disconnected hosts, download the `consumer_export.zip` bundle from the Customer Portal, extract the PEM from `export/entitlement_certificates/`, copy it to `/tmp`, and import it with `subscription-manager import`.
+- When manually seeding Satellite content from DVD ISOs, mount each ISO and copy into `/var/www/html/pub/sat-import/`:
+
+```bash
+for ISO in *.iso; do
+  echo "Mounting $ISO"
+  sudo mount -o loop "$ISO" /mnt/iso
+  sudo cp -ru /mnt/iso/* /var/www/html/pub/sat-import/.
+  sudo umount /mnt/iso
+done
+```
+- After importing media, sync products (`Content -> Sync Status -> Expand All -> Synchronize Now`), then save and promote each Content View through successive environments.
+
 ## Command: yum
 
 **Category:** Package management  

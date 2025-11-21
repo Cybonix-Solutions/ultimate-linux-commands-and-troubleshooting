@@ -14,12 +14,8 @@ Step-by-step investigations and fixes for recurring Linux issues, from boot fail
 
 | File | Focus |
 |------|-------|
-| [`boot-and-grub.md`](boot-and-grub.md) | Bootloaders, kernel panics, initramfs issues. |
-| [`networking-issues.md`](networking-issues.md) | Connectivity, DNS, VPN, firewall problems. |
 | [`storage-and-raid.md`](storage-and-raid.md) | Disk health, RAID rebuilds, filesystem errors. |
-| [`performance.md`](performance.md) | CPU, memory, IO bottlenecks, tuning steps. |
-| [`security-and-selinux.md`](security-and-selinux.md) | SELinux AVCs, firewall blocks, auth failures. |
-| [`desktop-and-gui.md`](desktop-and-gui.md) | X11/Wayland glitches, display managers, audio. |
+| [`security-and-selinux.md`](security-and-selinux.md) | Root password resets, SELinux AVCs, auth failures. |
 | [`misc.md`](misc.md) | Edge cases that do not fit other categories. |
 
 ## Authoring Checklist

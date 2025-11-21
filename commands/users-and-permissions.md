@@ -70,6 +70,7 @@ sudo faillock --user <acct>             # Show current failure stats
 ```bash
 lslogins --logins=0,500,jdoe --output=UID,USER,LAST-LOGIN,LAST-TTY,FAILED-LOGIN,FAILED-TTY
 lslogins --user-accs --supp-groups --acc-expiration
+lslogins <acctname>                            # Focused view for a single account
 ```
 
 ### Tips & troubleshooting

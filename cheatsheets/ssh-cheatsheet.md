@@ -46,3 +46,36 @@ Host work-bastion
 ```
 
 - With multiplexing enabled, subsequent `ssh work-bastion` sessions piggyback on the first connection, speeding up repeated commands and `scp`.
+
+## Topic: SFTP-only Chroot User
+
+```bash
+sudo adduser --shell /bin/false sftpuser
+sudo passwd sftpuser
+sudo mkdir -p /var/sftp/files
+sudo chown sftpuser:<group> /var/sftp/files
+sudo chown root:root /var/sftp && sudo chmod 755 /var/sftp
+```
+
+```sshconfig
+Match User sftpuser
+  ForceCommand internal-sftp
+  PasswordAuthentication yes
+  ChrootDirectory /var/sftp
+  PermitTunnel no
+  AllowAgentForwarding no
+  AllowTcpForwarding no
+  X11Forwarding no
+```
+
+- Restart sshd to apply the Match block: `sudo systemctl restart sshd`.
+- Set the group appropriately if you want shared write access under `/var/sftp/files`.
+
+## Topic: Legacy Key Exchange
+
+```sshconfig
+Host legacy-appliance
+  KexAlgorithms +diffie-hellman-group14-sha1
+```
+
+- Use only for devices that cannot handle modern KEX; scope the override to specific hosts to avoid weakening global defaults.

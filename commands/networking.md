@@ -93,6 +93,14 @@ ssh -L 8443:localhost:8443 user@bastion        # Forward a remote port for local
 
 - Add `-v` (or `-vvv`) when troubleshooting handshake issues.
 - Pair with `ssh-copy-id user@host` to push your public key and disable password logins later.
+- When older appliances only accept legacy Diffie-Hellman KEX, add a scoped override in `/etc/ssh/ssh_config`:
+
+```sshconfig
+Host legacy-host
+  KexAlgorithms +diffie-hellman-group14-sha1
+```
+
+  Use this sparingly and only for the specific hosts that require weaker algorithms.
 
 ## Command: wget
 

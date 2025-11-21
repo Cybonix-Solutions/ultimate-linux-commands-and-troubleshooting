@@ -119,6 +119,7 @@ sudo rear mkrescue                        # Build a rescue ISO or image
 ```
 
 - `tar -zcvf /home/recovery/<folder>-$(date +%y-%m-%d).tar.gz /home/recovery/<folder>` is a quick follow-up to archive created ISOs; remember to `chown admin:admin` on the outputs.
+- When aggregating images from physical servers, copy the generated archives off-host (`scp admin@server:/home/recovery/*.gz /adm/flash/rhel_rear/`) before cleaning `/home/recovery`.
 
 ## Command: svcadm
 

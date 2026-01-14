@@ -278,6 +278,34 @@ source ./new_vars.sh                             # Load environment tweaks witho
 - Remember that syntax errors in the sourced file abort your current shell when `set -e` is active—test in a subshell first.
 - Use absolute paths in login scripts to avoid sourcing the wrong file when `pwd` changes mid-script.
 
+## Command: growisofs
+
+**Category:** Optical media
+**Distros:** All
+**Summary:** Burns ISO images to DVD or Blu-ray discs; handles the entire process including filesystem preparation.
+
+### Common usages
+
+```bash
+# Install the tool (RHEL/CentOS)
+sudo dnf install dvd+rw-tools
+
+# Identify your optical drive
+lsblk
+sudo cdrecord --scanbus
+
+# Burn ISO to Blu-ray/DVD with maximum compatibility
+sudo growisofs -dvd-compat -Z /dev/sr0=rhel-9.6-x86_64-dvd.iso
+```
+
+### Tips & troubleshooting
+
+- `-dvd-compat` closes the disc (unappendable) for maximum boot compatibility on other systems.
+- `-Z /dev/sr0=` starts an initial session; replace `/dev/sr0` with your actual device.
+- Verify after burning: mount the disc and list contents to confirm successful write.
+- Single-layer Blu-ray = 25GB, dual-layer = 50GB; ensure ISO fits the media.
+- Use `dmesg` to troubleshoot optical drive issues if burning fails.
+
 ## Command: which
 
 **Category:** Path lookup  

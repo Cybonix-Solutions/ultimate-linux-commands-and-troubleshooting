@@ -102,6 +102,37 @@ Host legacy-host
 
   Use this sparingly and only for the specific hosts that require weaker algorithms.
 
+## Command: VPN debugging workflow
+
+**Category:** Network diagnostics
+**Distros:** All
+**Summary:** Quick workflow to diagnose routing and DNS behavior while connected to a VPN.
+
+### Common usages
+
+```bash
+# Find VPN interface name (commonly tun0, wg0, ppp0)
+ip link show
+
+# Test DNS resolution while connected to VPN
+nslookup teams.microsoft.com
+
+# Find which interface routes traffic to a specific IP
+ip route get 13.107.64.1
+
+# View full routing table
+ip route show
+
+# Monitor bandwidth on VPN interface
+sudo iftop -i tun0
+```
+
+### Tips & troubleshooting
+
+- VPN interface names vary: `tun0` (OpenVPN), `wg0` (WireGuard), `ppp0` (PPTP/L2TP), `tailscale0` (Tailscale).
+- Use `traceroute -n <ip>` to verify traffic path with and without VPN.
+- Check for split-tunnel configuration with `ip route show table all | grep -E "(default|10\.|192\.168\.)"`.
+
 ## Command: wget
 
 **Category:** HTTP client  

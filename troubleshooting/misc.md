@@ -48,6 +48,79 @@ rm -rf /opt/xymon-4.3.30 /tmp/xymon-4.3.30.tar.gz
 
 - For freshly built servers, locate and run the site’s `Complete_Installation_<physical|virtual>.sh` bootstrap (typically staged in `/root` or the Satellite pub share) before adding monitoring.
 
+## Scenario: APT repository "Skipping acquire" warning for unsupported architecture
+
+**Symptoms:** Running `sudo apt update` shows `N: Skipping acquire of configured file 'main/binary-i386/Packages' as repository '...' doesn't support architecture 'i386'`.
+**Applies to:** Ubuntu/Debian with third-party repositories that only provide amd64 packages.
+
+### Investigation
+1. Identify the repository triggering the warning from the apt update output.
+2. Locate the corresponding `.list` file in `/etc/apt/sources.list.d/`.
+
+### Resolution
+- Edit the source file and add `[arch=amd64]` to the deb line:
+
+```bash
+sudo nano /etc/apt/sources.list.d/example-repo.list
+```
+
+- If the line has no existing options:
+
+```
+# Before
+deb https://example.repo.com/... main
+
+# After
+deb [arch=amd64] https://example.repo.com/... main
+```
+
+- If the line already has options in brackets, add `arch=amd64` inside:
+
+```
+# Before
+deb [signed-by=/etc/apt/keyrings/repo-key.gpg] https://example.repo.com/... main
+
+# After
+deb [arch=amd64 signed-by=/etc/apt/keyrings/repo-key.gpg] https://example.repo.com/... main
+```
+
+- Verify the fix with `sudo apt update`; the warning should be gone.
+
+## Scenario: USB audio device not recognized by PipeWire
+
+**Symptoms:** USB headset or audio device detected by `lsusb` but not appearing in sound settings or `wpctl status`.
+**Applies to:** Ubuntu 24.04+ with PipeWire (default), or older systems using PulseAudio.
+
+### Investigation
+1. Confirm the device is detected at USB level: `lsusb`.
+2. Check if PipeWire sees the device: `wpctl status`.
+3. Review kernel messages for errors: `dmesg | tail -20`.
+
+### Resolution
+- Restart the audio services to re-scan devices:
+
+```bash
+# For PipeWire (Ubuntu 24.04+ default)
+systemctl --user restart pipewire pipewire-pulse
+
+# For PulseAudio (older systems)
+pulseaudio -k
+```
+
+- Verify the device now appears:
+
+```bash
+wpctl status
+```
+
+- Set the device as default output/input:
+
+```bash
+wpctl set-default <sink-id>
+```
+
+- Alternatively, use the Ubuntu Sound Settings GUI to select the device.
+
 ## Scenario: Quick Solaris/UNIX system inventory
 
 **Symptoms:** Need a fast snapshot of hardware, networking, and user state on a Solaris box.  

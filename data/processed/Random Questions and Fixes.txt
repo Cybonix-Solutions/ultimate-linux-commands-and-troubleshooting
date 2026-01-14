@@ -1,0 +1,414 @@
+Random Questions and Fixes
+==========================
+
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+How do I remove this unsupported architecture?  jorimoloye@S1CXFL0Z:~$ sudo apt update
+Hit:1 http://us.archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://us.archive.ubuntu.com/ubuntu noble-updates InRelease                                                                                                                            
+Hit:3 http://us.archive.ubuntu.com/ubuntu noble-backports InRelease                                                                                                                          
+Get:4 https://dl.google.com/linux/chrome/deb stable InRelease [1,825 B]                                                                            
+Get:5 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]                                                                 
+Hit:6 https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev antigravity-debian InRelease
+Hit:7 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu noble InRelease
+Hit:8 https://ppa.launchpadcontent.net/openrazer/stable/ubuntu noble InRelease
+Get:9 https://dl.google.com/linux/chrome/deb stable/main amd64 Packages [1,214 B]
+Hit:10 https://ppa.launchpadcontent.net/polychromatic/stable/ubuntu noble InRelease        
+Hit:11 https://ppa.launchpadcontent.net/yubico/stable/ubuntu noble InRelease
+Get:12 http://security.ubuntu.com/ubuntu noble-security i386 Contents (deb) [53.7 MB]
+Get:13 http://security.ubuntu.com/ubuntu noble-security amd64 Contents (deb) [118 MB]                                                                                                        
+Fetched 172 MB in 25s (6,836 kB/s)                                                                                                                                                           
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+29 packages can be upgraded. Run 'apt list --upgradable' to see them.
+N: Skipping acquire of configured file 'main/binary-i386/Packages' as repository 'https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev antigravity-debian InRelease' doesn't support architecture 'i386'
+jorimoloye@S1CXFL0Z:~$
+To remove the "unsupported architecture" message for that specific repository, you need to configure APT to explicitly ignore the i386 architecture for the us-central1-apt.pkg.dev... source.
+Here is how you can do it:
+The Fix: Add an Architecture Option 
+You need to edit the APT source file for that repository and add an [arch=amd64] option to the entry. This tells APT to only look for amd64 packages from that source, ignoring the i386 architecture that it is trying to acquire by default. 
+Locate the Source File: The repository is likely defined in a file within the /etc/apt/sources.list.d/ directory. You can list the files to find the correct one (it might have a name related to antigravity or pkg.dev).
+Edit the File: Use the nano editor with sudo privileges to open the file. Replace filename.list with the actual filename you found:
+bash
+sudo nano /etc/apt/sources.list.d/filename.list
+Use code with caution.
+
+Modify the Entry: Inside the file, you will see a line similar to this:
+deb https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev antigravity-debian main
+Change it to this by inserting [arch=amd64] after deb:
+deb [arch=amd64] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev antigravity-debian main
+Save and Exit:
+In nano, press Ctrl+O to write the changes.
+Press Enter to confirm the filename.
+Press Ctrl+X to exit the editor.
+Update APT: Now run sudo apt update again. The "Skipping acquire" warning message for that specific repository should be gone. 
+Would you like me to help you find the exact filename for that source entry, or do you have other APT configuration questions?
+
+
+7 sites
+Error: package architecture (arm) does not match system (armhf)
+Jul 10, 2016 — If that does not work then try add architecture.
+
+monicagranbois.com
+
+[ERROR] Node.js 18 on Ubuntu22.04 Installation fail - InRelease' doesn't support architecture 'i386' · Issue #1501 · nodesource/distributions
+Jan 19, 2023 — So now apt is looking for i386 folders in repositories, and will send a notification if it doesn't find it. By adding the arch=amd...
+
+GitHub
+
+Installing MariaDB .deb Files | Server
+Dec 11, 2025 — Another way to add an apt repository is by creating a source list file in /etc/apt/sources. list. d/ .
+
+mariadb.com
+
+Show all
+deb [signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main
+That is the correct format for the source entry, including the signed-by option. To fix the "unsupported architecture" message, you need to add the [arch=amd64] option into that line.
+How to Edit the Source File
+Open the file: Based on typical Ubuntu configurations, this line is likely in a file named antigravity-auto-updater-dev.list inside /etc/apt/sources.list.d/.Open it using sudo nano:
+bash
+sudo nano /etc/apt/sources.list.d/antigravity-auto-updater-dev.list
+Use code with caution.
+
+Modify the line: Change the line in the editor from:
+deb [signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main
+to this (adding arch=amd64 inside the brackets):
+deb [arch=amd64 signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main
+Save and Exit:
+Press Ctrl+O to save the file.
+Press Enter to confirm the filename.
+Press Ctrl+X to exit nano.
+Verify: Run sudo apt update again. The i386 error for that specific repository should be resolved.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+I am downloading a RHEL 9 iso image to burn to a blue ray disc on my RHEL 8 workstation. I am going to need the exact step-by-step to burn this rhel-9.6-x86_64-dvd.iso file to disc.
+December 30, 2025
+
+To burn the rhel-9.6-x86_64-dvd.iso file to a Blu-ray disc on your RHEL 8 workstation using the command line, you will primarily use the growisofs utility.
+Prerequisites
+Ensure you have a Blu-ray burner drive and a blank, recordable Blu-ray disc (BD-R or BD-RE). A standard single-layer Blu-ray disc has a capacity of 25GB, which should be sufficient for the RHEL 9.6 ISO.
+Install the necessary tools if they are not already present:
+bash
+sudo dnf install dvd+rw-tools
+Use code with caution.
+
+dvd+rw-tools provides the growisofs command. 
+Step-by-Step Instructions
+1. Identify your Blu-ray drive's device name
+Insert the blank Blu-ray disc into your drive. The system should recognize it as a SCSI optical drive. You need to find its device name, which is typically /dev/sr0, /dev/sr1, or similar. 
+Use the dmesg command to check kernel messages, or lsblk to list block devices, after inserting the disc. 
+bash
+lsblk
+Use code with caution.
+
+Alternatively, you can use the cdrecord (or wodim) command to scan for devices: 
+bash
+sudo cdrecord --scanbus
+Use code with caution.
+
+The output will list devices, e.g., dev=0,0,0. The corresponding device file might be /dev/sr0. For these instructions, we will assume your device is /dev/sr0. 
+2. Burn the ISO image to the Blu-ray disc 
+Navigate to the directory containing your ISO file, then execute the following command. The growisofs command handles the entire process, including preparing the filesystem and writing the data. 
+bash
+sudo growisofs -dvd-compat -Z /dev/sr0=rhel-9.6-x86_64-dvd.iso
+Use code with caution.
+
+sudo: The command generally needs root privileges.
+-dvd-compat: This option ensures the disc is closed (unappendable recording), which provides maximum compatibility for booting or reading on other systems.
+-Z /dev/sr0=: This tells growisofs to start an initial session (-Z) and specifies your Blu-ray drive device (/dev/sr0) and the source ISO file (=rhel-9.6-x86_64-dvd.iso). 
+The command will display progress information as it writes the data to the disc. 
+3. Verify the disc after burning
+Once the command finishes and ejects the disc, it is recommended to verify the data to ensure the burn was successful and the disc is bootable. 
+Re-insert the newly burned Blu-ray disc into the drive.
+Mount the disc to a temporary directory.
+bash
+sudo mkdir -p /media/rhel9_install
+sudo mount /dev/sr0 /media/rhel9_install
+Use code with caution.
+
+List some files to confirm content and check the mount logs for any errors.
+bash
+ls /media/rhel9_install
+Use code with caution.
+
+When finished, unmount the disc.
+bash
+sudo umount /media/rhel9_install
+Use code with caution.
+
+ 
+Your RHEL 9.6 bootable Blu-ray disc is now ready for use.
+-------------------------------------------------------------------------------------------------------------------------------------
+
+On an Ubuntu system, I am getting SSSD PAM module is not installed for smart card auth, even though I installed the YubiKey package.
+January 07, 2026
+
+The message "SSSD PAM module is not installed" usually indicates missing software packages or a configuration issue, even if YubiKey-specific software is present. The YubiKey package often handles U2F/FIDO authentication, but SSSD smart card (PIV/CAC) authentication relies on different, specific SSSD and PAM modules. 
+Here are steps to resolve this on Ubuntu:
+1. Verify Required Packages are Installed 
+Ensure the core SSSD and smart card packages are installed. While libpam-sss is typically installed by default on newer Ubuntu versions (20.04+), it's good to confirm. 
+bash
+sudo apt update
+sudo apt install libpam-sss opensc-pkcs11 pcscd
+Use code with caution.
+
+libpam-sss: Provides the necessary SSSD PAM module for authentication.
+opensc-pkcs11: A general-purpose PKCS#11 driver that supports many smart cards, including YubiKeys in PIV mode.
+pcscd: The PC/SC Smart Card Daemon, which communicates with the card reader. 
+2. Configure SSSD for Smart Card Authentication 
+The SSSD configuration file needs to be updated to enable certificate-based authentication within the PAM service. 
+Open the SSSD configuration file:
+bash
+sudo nano /etc/sssd/sssd.conf
+Use code with caution.
+
+In the [pam] section, ensure pam_cert_auth is set to True:
+ini
+[sssd]
+services = pam, nss, ... (other services may be listed)
+
+[pam]
+pam_cert_auth = True
+Use code with caution.
+
+(Note: The sssd.conf file must be owned by root and have permissions set to 600, otherwise SSSD will not load it). 
+3. Add Certificate Authorities (CAs) 
+SSSD needs to trust the Certificate Authority (CA) that signed the certificate on your YubiKey. You'll need the CA certificate chain in PEM format. 
+Create the SSSD PKI directory with the correct permissions:
+bash
+sudo mkdir -p /etc/sssd/pki
+sudo chmod 600 /etc/sssd/pki
+Use code with caution.
+
+Append your CA certificates (e.g., ca_chain.pem) to the SSSD CA database file:
+bash
+sudo cat ca_chain.pem >> /etc/sssd/pki/sssd_auth_ca_db.pem
+Use code with caution.
+
+ 
+4. Restart SSSD 
+After making configuration changes, restart the SSSD service for them to take effect. 
+bash
+sudo systemctl restart sssd
+sudo systemctl enable pcscd.service # Ensure pcscd runs on boot
+Use code with caution.
+
+5. Verify the PAM Configuration 
+The error message indicates an issue with the GDM (Gnome Display Manager) login screen's ability to find the SSSD PAM module for smart card use. The PAM configuration files in /etc/pam.d/ need to correctly reference SSSD. 
+You can use pam-auth-update to manage your system's common PAM configuration files. 
+bash
+sudo pam-auth-update
+Use code with caution.
+
+Ensure the SSSD smart card option is enabled in the menu (it may be labeled sss-smart-card-required or similar). 
+After following these steps, the SSSD PAM module should be properly integrated into the authentication flow.
+If the issue persists, would you like help with verifying the SSSD configuration using pamtester or troubleshooting specific entries in your PAM configuration files? 
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+# Find your VPN interface name
+ip link show
+
+# While connected to VPN
+nslookup teams.microsoft.com
+
+# Should resolve to Microsoft IPs, not internal
+
+# Find which interface handles Teams
+ip route get 13.107.64.1  # Example Teams IP
+
+
+# Check routing table
+ip route show
+
+# Monitor bandwidth
+sudo iftop -i tun0  # or your VPN interface
+
+-------------------------------------------------------------------------------------------------------------------------------------
+Step-by-Step: Grant Sudo for Specific Commands Only
+1. Identify the Commands Needed
+First, find the full paths to the commands:
+bashwhich docker
+which dockerd
+which systemctl
+which apt
+which usermod
+# etc.
+Common paths you'll need:
+
+/usr/bin/docker
+/usr/bin/systemctl
+/usr/bin/apt
+/usr/bin/apt-get
+/usr/sbin/usermod
+
+
+2. Create a Custom Sudoers File
+Always use visudo to edit sudoers files (it validates syntax):
+bashsudo visudo -f /etc/sudoers.d/tjenkins-limited
+
+3. Add Limited Sudo Rules
+Here's a template for Docker setup and common system configuration tasks:
+bash# Allow tjenkins to run Docker-related commands
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl start docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl enable docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl status docker
+
+# Allow package management for installing software
+tjenkins ALL=(ALL) /usr/bin/apt install *
+tjenkins ALL=(ALL) /usr/bin/apt update
+tjenkins ALL=(ALL) /usr/bin/apt upgrade
+tjenkins ALL=(ALL) /usr/bin/apt-get install *
+tjenkins ALL=(ALL) /usr/bin/apt-get update
+
+# Allow user/group modifications (for adding self to docker group)
+tjenkins ALL=(ALL) NOPASSWD: /usr/sbin/usermod -aG docker tjenkins
+
+# Allow editing system files (be careful with this one)
+tjenkins ALL=(ALL) /usr/bin/nano /etc/docker/daemon.json
+tjenkins ALL=(ALL) /usr/bin/vim /etc/docker/daemon.json
+Syntax explanation:
+
+tjenkins = username
+ALL=(ALL) = from any host, as any user
+NOPASSWD: = don't require password (optional, remove for more security)
+Full path to command = the allowed command
+* = allows any arguments (use carefully)
+
+
+4. More Restrictive Docker Option
+If you want tjenkins to use Docker without sudo at all, better approach:
+bash# Just add them to the docker group
+sudo usermod -aG docker tjenkins
+
+# Then they won't need sudo for docker commands at all
+# (requires logout/login to take effect)
+Then only grant sudo for system-level setup tasks:
+bash# In /etc/sudoers.d/tjenkins-limited
+tjenkins ALL=(ALL) /usr/bin/apt install *
+tjenkins ALL=(ALL) /usr/bin/apt update
+tjenkins ALL=(ALL) /usr/bin/systemctl restart *
+
+5. Save and Set Permissions
+After saving with visudo:
+bashsudo chmod 0440 /etc/sudoers.d/tjenkins-limited
+
+6. Test the Configuration
+As tjenkins:
+bash# Should work:
+sudo docker ps
+sudo systemctl restart docker
+sudo apt update
+
+# Should fail:
+sudo reboot
+sudo su -
+sudo passwd root
+
+Example: Docker Setup Only
+If you only want Docker-related commands:
+bash# /etc/sudoers.d/tjenkins-docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/bin/systemctl * docker
+tjenkins ALL=(ALL) NOPASSWD: /usr/sbin/usermod -aG docker tjenkins
+tjenkins ALL=(ALL) /usr/bin/apt install docker-ce*
+tjenkins ALL=(ALL) /usr/bin/apt install docker-compose*
+
+Security Best Practices
+✅ DO:
+
+Use full paths to commands
+Be specific with allowed commands
+Remove NOPASSWD: for sensitive commands
+Use wildcards (*) sparingly
+
+❌ DON'T:
+
+Grant sudo to text editors without file restrictions
+Use ALL without specific commands
+Give sudo to /bin/bash or /bin/sh
+
+
+To Revoke Access Later
+bash
+sudo rm /etc/sudoers.d/tjenkins-limited
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Alternative: Restart PulseAudio/PipeWire
+If the USB is detected but audio isn't picking it up:
+For PipeWire (Ubuntu 24.04 default):
+bash
+systemctl --user restart pipewire pipewire-pulse
+For PulseAudio:
+bashpulseaudio -k
+
+Good, the USB device is detected. Now just get PipeWire to pick it up:
+bashsystemctl --user restart pipewire pipewire-pulse
+Then check if it shows up as an audio device:
+bashwpctl status
+You should see the Blackwire listed under "Audio" sinks and sources. If it's there, you can set it as default from the Ubuntu sound settings or with:
+bashwpctl set-default <sink-id>
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+I have a user with this issue with usbguard.  The user doesn't have sudo rights yet.  I have two issues: can't use sudo and the keyboard and mouse not working with my laptop. The laptop is connected to a monitor via a USB-C cable, there's a hub plugged into the monitor, the keyboard is plugged into the monitor and the mouse is plugged into the hub. 
+ 
+The keyboard works for entering the BIOS password, so the problem is something in the Linux configuration.
+
+Jan 12
+
+Diagnosed USBGuard blocking peripherals, prioritized granting sudo access first.
+
+
+
+
+
+This is a classic USBGuard blocking issue. Since the keyboard works at BIOS, the hardware is fine - USBGuard is blocking the USB devices after Linux boots.
+
+Here's the solution in order:
+
+1. First, grant sudo access
+You'll need to add the user to the sudo group (or your organization's specific sudo group):
+
+bash
+sudo usermod -aG sudo username
+Or if you use a specific group for sudo:
+
+bash
+sudo usermod -aG your-sudo-group username
+2. Fix the USBGuard issue
+Option A: Whitelist the devices (recommended)
+
+As root or with sudo, list currently connected USB devices:
+
+bash
+sudo usbguard list-devices
+Find the blocked devices (keyboard, mouse, hub) and allow them:
+
+bash
+sudo usbguard allow-device <device-id>
+To make it permanent, append to the policy:
+
+bash
+sudo usbguard allow-device <device-id> -p
+Option B: Quick fix - allow all currently connected devices:
+
+bash
+sudo usbguard generate-policy > /etc/usbguard/rules.conf
+sudo systemctl restart usbguard
+Option C: Temporarily disable USBGuard (not recommended for production):
+
+bash
+sudo systemctl stop usbguard
+3. Have user log out and back in
+After adding sudo rights, they need to log out and back in for group membership to take effect.
+
+The most likely scenario is the USB-C hub devices are being blocked by USBGuard's default-deny policy. Once you whitelist them, everything should work normally.
+-------------------------------------------------------------------------------------------------------------------------------------

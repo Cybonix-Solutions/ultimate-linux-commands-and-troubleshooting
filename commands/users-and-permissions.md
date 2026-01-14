@@ -134,6 +134,47 @@ sudo usermod -aG myproject user              # Append group(s) without dropping 
 - Remember `-a` only works together with `-G`; without it the previous supplementary list is overwritten.
 - After group changes, tell the user to re-login or run `newgrp <group>` to pick up permissions immediately.
 
+## Command: visudo
+
+**Category:** Sudo configuration
+**Distros:** All
+**Summary:** Safely edits sudoers files with syntax validation to grant limited sudo access for specific commands.
+
+### Common usages
+
+```bash
+# Create a custom sudoers drop-in file
+sudo visudo -f /etc/sudoers.d/username-limited
+```
+
+### Example: Grant Docker-related sudo commands only
+
+```
+# Allow specific Docker operations (NOPASSWD = no password required)
+username ALL=(ALL) NOPASSWD: /usr/bin/docker
+username ALL=(ALL) NOPASSWD: /usr/bin/systemctl start docker
+username ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop docker
+username ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart docker
+
+# Package management (password required)
+username ALL=(ALL) /usr/bin/apt install *
+username ALL=(ALL) /usr/bin/apt update
+
+# Add user to docker group
+username ALL=(ALL) NOPASSWD: /usr/sbin/usermod -aG docker username
+```
+
+### Tips & troubleshooting
+
+- Always use `visudo` (never direct edit) to validate syntax before saving.
+- Use full paths to commands (`which docker` to find them).
+- Set permissions after saving: `sudo chmod 0440 /etc/sudoers.d/username-limited`.
+- Wildcards (`*`) allow any arguments—use sparingly for security.
+- Remove `NOPASSWD:` for sensitive commands to require password confirmation.
+- Never grant sudo to `/bin/bash`, `/bin/sh`, or unrestricted text editors.
+- Revoke access by removing the file: `sudo rm /etc/sudoers.d/username-limited`.
+- For Docker specifically, consider adding the user to the docker group instead: `sudo usermod -aG docker username`.
+
 ## Command: whoami
 
 **Category:** Identity  

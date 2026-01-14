@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Check if a keyword is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <keyword>"
+    echo "Example: $0 ssh"
+    exit 1
+fi
+
+SEARCH_TERM="$1"
+
+echo "Searching for \"$SEARCH_TERM\" in commands, cheatsheets, and troubleshooting..."
+echo "-------------------------------------------------------------------------------"
+
+# Run grep
+# -r: recursive
+# -n: show line numbers
+# -i: case insensitive
+# --color=always: force color output
+# --exclude-dir: skip meta usage files and raw data
+grep -r -n -i --color=always \
+    --exclude-dir={.git,data,meta} \
+    "$SEARCH_TERM" .
+
+echo "-------------------------------------------------------------------------------"

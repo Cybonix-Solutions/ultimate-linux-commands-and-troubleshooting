@@ -14,6 +14,7 @@ Step-by-step investigations and fixes for recurring Linux issues, from boot fail
 
 | File | Focus |
 |------|-------|
+| [`logging.md`](logging.md) | Runaway syslog, rsyslog issues, log management. |
 | [`storage-and-raid.md`](storage-and-raid.md) | Disk health, RAID rebuilds, filesystem errors. |
 | [`security-and-selinux.md`](security-and-selinux.md) | Root password resets, SELinux AVCs, auth failures. |
 | [`misc.md`](misc.md) | Edge cases that do not fit other categories. |

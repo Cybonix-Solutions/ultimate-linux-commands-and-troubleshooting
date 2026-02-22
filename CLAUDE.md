@@ -83,7 +83,8 @@ Keep entries terse; use tables or bullet blocks.
 ## Search
 
 ```bash
-./search <keyword>    # CLI search across commands, cheatsheets, troubleshooting
+./search <keyword>              # CLI search across commands, cheatsheets, troubleshooting
+python3 meta/generate_index.py  # Regenerate search index after adding content
 ```
 
-Web interface at `site/index.html` (reads from `site/search_index.json`).
+Web interface at `site/index.html` (reads from `site/search_index.json`). The index is auto-regenerated on push to main via GitHub Actions.

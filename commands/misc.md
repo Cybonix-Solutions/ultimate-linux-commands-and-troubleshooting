@@ -308,8 +308,8 @@ sudo growisofs -dvd-compat -Z /dev/sr0=rhel-9.6-x86_64-dvd.iso
 
 ## Command: which
 
-**Category:** Path lookup  
-**Distros:** All  
+**Category:** Path lookup
+**Distros:** All
 **Summary:** Shows the full path of the executable that the shell would run, honoring `$PATH` order.
 
 ### Common usages
@@ -323,3 +323,282 @@ which -a python3                                 # Display every matching execut
 
 - Alias-heavy environments may mask binaries; run `command -v <cmd>` for a POSIX-defined alternative.
 - On hashed Bash commands, `hash -r` clears the cache so `which` reflects freshly installed executables.
+
+## Command: uname
+
+**Category:** System info
+**Distros:** All
+**Summary:** Prints system information including kernel version, architecture, and hostname.
+
+### Common usages
+
+```bash
+uname -a                           # All system info
+uname -r                           # Kernel release version
+uname -s                           # Kernel name
+uname -m                           # Machine architecture (x86_64, aarch64)
+uname -n                           # Hostname
+```
+
+### Tips & troubleshooting
+
+- Quick kernel check: `uname -r`.
+- Check if 64-bit: `uname -m` should show x86_64 or aarch64.
+
+## Command: hostnamectl
+
+**Category:** System configuration
+**Distros:** All systemd-based (RHEL 7+, Ubuntu 16.04+)
+**Summary:** Queries and changes the system hostname persistently.
+
+### Common usages
+
+```bash
+hostnamectl                        # Show all hostname info
+hostnamectl status                 # Same as above
+hostnamectl set-hostname server01  # Set static hostname
+hostnamectl set-hostname --pretty "Production Server"
+```
+
+### Tips & troubleshooting
+
+- Changes are persistent (writes to `/etc/hostname`).
+- Three types: static (stored), pretty (human-readable), transient (temporary).
+
+## Command: timedatectl
+
+**Category:** System configuration
+**Distros:** All systemd-based (RHEL 7+, Ubuntu 16.04+)
+**Summary:** Controls system time, timezone, and NTP synchronization.
+
+### Common usages
+
+```bash
+timedatectl                        # Show current settings
+timedatectl list-timezones         # List available timezones
+timedatectl set-timezone America/New_York
+timedatectl set-ntp true           # Enable NTP sync
+timedatectl set-time "2024-01-15 10:30:00"  # Manual time (NTP must be off)
+```
+
+### Tips & troubleshooting
+
+- Always use NTP in production (`set-ntp true`).
+- Check this first if applications have timestamp issues.
+
+## Command: uptime
+
+**Category:** System info
+**Distros:** All
+**Summary:** Shows how long the system has been running and current load averages.
+
+### Common usages
+
+```bash
+uptime                             # Uptime and load averages
+uptime -p                          # Pretty format (up 2 days, 3 hours)
+uptime -s                          # Boot timestamp
+```
+
+### Tips & troubleshooting
+
+- Load averages show 1, 5, 15 minute averages.
+- Load = running + waiting processes; compare to CPU count for saturation.
+
+## Command: free
+
+**Category:** System info
+**Distros:** All
+**Summary:** Displays memory usage including RAM and swap.
+
+### Common usages
+
+```bash
+free                               # Memory in kilobytes
+free -h                            # Human readable (MB, GB)
+free -m                            # Megabytes
+free -g                            # Gigabytes
+free -s 5                          # Repeat every 5 seconds
+```
+
+### Tips & troubleshooting
+
+- "available" column = usable memory (free + reclaimable cache).
+- Low "available" (not just "free") indicates real memory pressure.
+- Buffer/cache usage is normal; Linux uses free RAM for disk cache.
+
+## Command: lscpu
+
+**Category:** Hardware info
+**Distros:** All
+**Summary:** Displays CPU architecture information including cores, threads, and cache.
+
+### Common usages
+
+```bash
+lscpu                              # All CPU info
+lscpu -e                           # Extended per-CPU format
+lscpu --json                       # JSON output
+```
+
+### Tips & troubleshooting
+
+- Shows cores, threads, sockets, cache sizes, and CPU flags.
+- Check flags for virtualization: grep for vmx (Intel) or svm (AMD).
+
+## Command: lsblk
+
+**Category:** Hardware info
+**Distros:** All
+**Summary:** Lists block devices in a tree format showing disks, partitions, and mount points.
+
+### Common usages
+
+```bash
+lsblk                              # Tree view of block devices
+lsblk -f                           # Show filesystems and UUIDs
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINT # Custom columns
+lsblk -d                           # Disks only (no partitions)
+lsblk -J                           # JSON output
+lsblk -p                           # Show full device paths
+```
+
+### Tips & troubleshooting
+
+- Better than `fdisk -l` for quick disk overview.
+- Shows LVM, RAID, and loop devices hierarchically.
+
+## Command: lspci
+
+**Category:** Hardware info
+**Distros:** All
+**Summary:** Lists PCI devices including network cards, GPUs, and storage controllers.
+
+### Common usages
+
+```bash
+lspci                              # All PCI devices
+lspci -v                           # Verbose output
+lspci -k                           # Show kernel drivers in use
+lspci -nn                          # Show vendor/device IDs
+lspci | grep -i vga                # Graphics cards
+lspci | grep -i net                # Network adapters
+```
+
+### Tips & troubleshooting
+
+- Use `-k` to verify correct drivers are loaded.
+- Vendor IDs help find drivers: `lspci -nn | grep Network`.
+
+## Command: lsusb
+
+**Category:** Hardware info
+**Distros:** All
+**Summary:** Lists USB devices connected to the system.
+
+### Common usages
+
+```bash
+lsusb                              # All USB devices
+lsusb -v                           # Verbose output
+lsusb -t                           # Tree view showing hubs
+lsusb -d 1234:5678                 # Filter by vendor:product
+```
+
+### Tips & troubleshooting
+
+- Use after plugging in a device to verify it's detected.
+- Check `dmesg | tail` for driver loading messages after USB connect.
+
+## Command: dmesg
+
+**Category:** System diagnostics
+**Distros:** All
+**Summary:** Prints kernel ring buffer messages showing hardware events and driver output.
+
+### Common usages
+
+```bash
+dmesg                              # All kernel messages
+dmesg -H                           # Human readable with pager
+dmesg -T                           # Human-readable timestamps
+dmesg -w                           # Follow live (like tail -f)
+dmesg --level=err,warn             # Only errors and warnings
+dmesg | grep -i usb                # USB-related messages
+dmesg | tail -50                   # Recent messages
+```
+
+### Tips & troubleshooting
+
+- First place to check after hardware issues or driver problems.
+- `-T` converts boot-relative timestamps to wall clock time.
+- On systemd systems, `journalctl -k` provides similar output with better filtering.
+
+## Command: vmstat
+
+**Category:** Performance monitoring
+**Distros:** All
+**Summary:** Reports virtual memory statistics including CPU, memory, and I/O.
+
+### Common usages
+
+```bash
+vmstat                             # One-time snapshot
+vmstat 1                           # Update every second
+vmstat 1 10                        # Every second, 10 iterations
+vmstat -s                          # Summary statistics
+vmstat -d                          # Disk statistics
+```
+
+### Tips & troubleshooting
+
+- Key columns: r (processes waiting for CPU), b (blocked on I/O), si/so (swap in/out).
+- High si/so indicates memory pressure and swapping.
+- wa column shows CPU time waiting for I/O.
+
+## Command: iostat
+
+**Category:** Performance monitoring
+**Distros:** All (sysstat package)
+**Summary:** Reports CPU and disk I/O statistics for performance analysis.
+
+### Common usages
+
+```bash
+iostat                             # Basic CPU and disk stats
+iostat -x                          # Extended disk stats
+iostat -x 1                        # Extended stats every second
+iostat -d sda                      # Specific device only
+iostat -m                          # Show throughput in MB/sec
+```
+
+### Tips & troubleshooting
+
+- Key columns (extended): await (I/O wait time ms), %util (device saturation).
+- High await with high %util = disk bottleneck.
+- Install: `apt install sysstat` (Ubuntu) or `dnf install sysstat` (RHEL).
+
+## Command: sar
+
+**Category:** Performance monitoring
+**Distros:** All (sysstat package)
+**Summary:** Collects and reports system activity including historical data.
+
+### Common usages
+
+```bash
+sar                                # CPU usage today
+sar -r                             # Memory usage
+sar -b                             # I/O statistics
+sar -n DEV                         # Network interface stats
+sar -d                             # Disk activity
+sar -q                             # Load averages and queue
+sar -f /var/log/sa/sa15            # Specific day (15th)
+sar -s 09:00:00 -e 17:00:00        # Time range
+```
+
+### Tips & troubleshooting
+
+- Data collected by sadc cron job when sysstat is enabled.
+- Historical data in `/var/log/sa/` (RHEL) or `/var/log/sysstat/` (Ubuntu).
+- Essential for post-mortem analysis of performance issues.

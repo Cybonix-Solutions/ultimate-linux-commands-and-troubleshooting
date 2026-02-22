@@ -8,12 +8,15 @@ Concise, high-signal reminders for shortcuts, flags, and workflows that you need
 
 | File | Focus |
 |------|-------|
-| [`tmux-cheatsheet.md`](tmux-cheatsheet.md) | Multiplexer shortcuts, pane/window management, session tricks. |
-| [`systemd-cheatsheet.md`](systemd-cheatsheet.md) | Service management, unit queries, journald snippets. |
-| [`logging-cheatsheet.md`](logging-cheatsheet.md) | Legacy log locations and `journalctl` filters for RHEL/systemd. |
-| [`ssh-cheatsheet.md`](ssh-cheatsheet.md) | Connection patterns, config snippets, port forwarding. |
-| [`bash-shortcuts.md`](bash-shortcuts.md) | Shell navigation, readline bindings, history controls. |
+| [`bash-shortcuts.md`](bash-shortcuts.md) | Readline shortcuts, history expansion, parameter expansion, conditionals. |
+| [`docker-cheatsheet.md`](docker-cheatsheet.md) | Container lifecycle, images, volumes, networks, compose. |
 | [`ftp-cheatsheet.md`](ftp-cheatsheet.md) | Core FTP commands for anonymous and authenticated sessions. |
+| [`logging-cheatsheet.md`](logging-cheatsheet.md) | Legacy log locations and `journalctl` filters for RHEL/systemd. |
+| [`regex-cheatsheet.md`](regex-cheatsheet.md) | Regular expressions for grep, sed, awk. |
+| [`ssh-cheatsheet.md`](ssh-cheatsheet.md) | Connection patterns, config snippets, port forwarding. |
+| [`systemd-cheatsheet.md`](systemd-cheatsheet.md) | Service management, unit queries, journald snippets. |
+| [`tmux-cheatsheet.md`](tmux-cheatsheet.md) | Multiplexer shortcuts, pane/window management, session tricks. |
+| [`vim-cheatsheet.md`](vim-cheatsheet.md) | Navigation, editing, search/replace, macros. |
 
 Add additional sheets when a topic grows beyond a couple of bullets inside other docs.
 

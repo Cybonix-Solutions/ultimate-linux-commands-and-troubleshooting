@@ -161,8 +161,8 @@ svcs -xv <service>               # Explain why a service is in maintenance
 
 ## Command: top
 
-**Category:** Process monitoring  
-**Distros:** All  
+**Category:** Process monitoring
+**Distros:** All
 **Summary:** Interactive, real-time view of CPU, memory, and load statistics plus per-process details.
 
 ### Common usages
@@ -176,3 +176,217 @@ top -b -n 1 | head -n 20                     # Batch mode for automation/log cap
 
 - Press `1` to expand CPU utilization per core and `c` to show full command lines.
 - When analyzing historic spikes, prefer `sar` or `pidstat`; `top` only shows the current moment.
+
+## Command: systemctl
+
+**Category:** Service management
+**Distros:** All systemd-based (RHEL 7+, Ubuntu 16.04+, Debian 8+)
+**Summary:** Controls the systemd system and service manager for starting, stopping, and inspecting services.
+
+### Common usages
+
+```bash
+# Service management
+systemctl start nginx              # Start service
+systemctl stop nginx               # Stop service
+systemctl restart nginx            # Restart service
+systemctl reload nginx             # Reload config without restart
+systemctl status nginx             # Status and recent logs
+systemctl enable nginx             # Start on boot
+systemctl disable nginx            # Don't start on boot
+systemctl enable --now nginx       # Enable and start immediately
+systemctl is-active nginx          # Check if running (for scripts)
+systemctl is-enabled nginx         # Check boot status
+systemctl mask nginx               # Prevent starting entirely
+systemctl unmask nginx             # Remove mask
+
+# Listing and inspection
+systemctl list-units               # All loaded units
+systemctl list-units --failed      # Failed units only
+systemctl list-unit-files          # All unit files and states
+systemctl list-dependencies nginx  # Dependency tree
+systemctl show nginx               # All unit properties
+systemctl cat nginx                # Show unit file contents
+
+# System state
+systemctl daemon-reload            # Reload unit files after editing
+systemctl reboot                   # Reboot system
+systemctl poweroff                 # Shutdown
+systemctl isolate multi-user.target  # Switch to text mode
+```
+
+### Tips & troubleshooting
+
+- After editing unit files, always run `daemon-reload` before restart.
+- `mask` is stronger than `disable`; prevents manual start too.
+- Use `--user` for user-level services.
+- SSH service is `sshd` on RHEL, `ssh` on Ubuntu.
+
+## Command: journalctl
+
+**Category:** Log management
+**Distros:** All systemd-based (RHEL 7+, Ubuntu 16.04+, Debian 8+)
+**Summary:** Queries the systemd journal for structured logs from services, kernel, and system.
+
+### Common usages
+
+```bash
+# Basic queries
+journalctl                         # All logs (oldest first)
+journalctl -f                      # Follow live (like tail -f)
+journalctl -n 100                  # Last 100 entries
+journalctl -r                      # Reverse order (newest first)
+journalctl -k                      # Kernel messages only (like dmesg)
+journalctl -b                      # Current boot only
+journalctl -b -1                   # Previous boot
+journalctl --list-boots            # List recorded boots
+
+# Filtering
+journalctl -u nginx                # Specific unit
+journalctl -u nginx -u php-fpm     # Multiple units
+journalctl _PID=1234               # Specific PID
+journalctl _UID=1000               # Specific user
+journalctl -p err                  # Priority: emerg,alert,crit,err,warning,notice,info,debug
+journalctl -p err..warning         # Priority range
+journalctl --since "1 hour ago"    # Time-based
+journalctl --since "2024-01-15 10:00" --until "2024-01-15 12:00"
+
+# Output and maintenance
+journalctl -o json-pretty          # JSON output
+journalctl --no-pager              # Don't page output
+journalctl --disk-usage            # Space used by journal
+journalctl --vacuum-time=7d        # Delete logs older than 7 days
+journalctl --vacuum-size=500M      # Shrink journal to 500M
+```
+
+### Tips & troubleshooting
+
+- Use `-xe` for recent errors with explanations.
+- `journalctl -u service --since "10 min ago"` is essential for debugging.
+- Journal survives reboots if persistent storage is enabled (`/var/log/journal/`).
+
+## Command: htop
+
+**Category:** Process monitoring
+**Distros:** All (htop package)
+**Summary:** Interactive process viewer with visual CPU/memory meters and mouse support.
+
+### Common usages
+
+```bash
+htop                               # Launch interactive viewer
+htop -u username                   # Filter by user
+htop -p 1234,5678                  # Monitor specific PIDs
+htop -t                            # Tree view by default
+```
+
+### Tips & troubleshooting
+
+- Press F2 for setup, F3 to search, F4 to filter, F5 for tree view, F9 to kill.
+- Press `H` to hide user threads, `K` to hide kernel threads.
+- Install: `apt install htop` (Ubuntu) or `dnf install htop` (RHEL).
+
+## Command: lsof
+
+**Category:** Process inspection
+**Distros:** All
+**Summary:** Lists open files, network connections, and file descriptors by process.
+
+### Common usages
+
+```bash
+lsof -u username                   # Files opened by user
+lsof -c nginx                      # Files opened by process name
+lsof -p 1234                       # Files opened by PID
+lsof /var/log/syslog               # Processes using this file
+lsof +D /var/log                   # Processes using this directory
+lsof -i                            # All network connections
+lsof -i :80                        # Connections on port 80
+lsof -i tcp                        # TCP connections only
+lsof -i @192.168.1.1               # Connections to/from IP
+lsof -i -s TCP:LISTEN              # Listening sockets only
+lsof +L1                           # Deleted files still open
+```
+
+### Tips & troubleshooting
+
+- Find what's holding a deleted file: `lsof +L1`.
+- Find why you can't unmount: `lsof +D /mnt/usb`.
+- "Too many open files" error? Check count: `lsof -u user | wc -l`.
+
+## Command: strace
+
+**Category:** Process debugging
+**Distros:** All
+**Summary:** Traces system calls and signals to debug process behavior and failures.
+
+### Common usages
+
+```bash
+strace ls                          # Trace a command
+strace -p 1234                     # Attach to running process
+strace -f command                  # Follow child processes (forks)
+strace -e open command             # Trace only specific syscalls
+strace -e trace=file command       # File-related syscalls
+strace -e trace=network command    # Network syscalls
+strace -e trace=process command    # Process management syscalls
+strace -c command                  # Summary statistics
+strace -o output.log command       # Write to file
+strace -t command                  # Add timestamps
+strace -T command                  # Show time spent in syscalls
+```
+
+### Tips & troubleshooting
+
+- Process hanging? `strace -p PID` shows what it's waiting for.
+- Permission denied? strace shows the exact path being accessed.
+- `-f` is essential for multi-process applications.
+
+## Command: iotop
+
+**Category:** I/O monitoring
+**Distros:** All (iotop package)
+**Summary:** Top-like I/O monitor showing per-process disk read/write activity.
+
+### Common usages
+
+```bash
+iotop                              # Interactive view
+iotop -o                           # Only show processes with active I/O
+iotop -b                           # Batch mode (non-interactive)
+iotop -a                           # Accumulated I/O since start
+iotop -p 1234                      # Monitor specific PID
+```
+
+### Tips & troubleshooting
+
+- Requires root privileges.
+- Shows which process is causing disk thrashing.
+- Install: `apt install iotop` (Ubuntu) or `dnf install iotop` (RHEL).
+
+## Command: pgrep / pkill
+
+**Category:** Process control
+**Distros:** All
+**Summary:** Searches for processes by name and optionally sends signals to them.
+
+### Common usages
+
+```bash
+pgrep nginx                        # Show PIDs matching name
+pgrep -l nginx                     # Show PID and name
+pgrep -a nginx                     # Show PID and full command
+pgrep -u root                      # Processes owned by root
+pgrep -f "python script.py"        # Match full command line
+pgrep -c nginx                     # Count matches
+pkill nginx                        # Kill by name (SIGTERM)
+pkill -9 nginx                     # Kill by name (SIGKILL)
+pkill -HUP nginx                   # Send SIGHUP (reload)
+pkill -u username                  # Kill all user's processes
+```
+
+### Tips & troubleshooting
+
+- Safer than `killall` due to more precise matching options.
+- Use `-f` when process name differs from command (e.g., Python scripts).
+- Use `pgrep -a` to verify matches before using `pkill`.

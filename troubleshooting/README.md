@@ -14,9 +14,15 @@ Step-by-step investigations and fixes for recurring Linux issues, from boot fail
 
 | File | Focus |
 |------|-------|
+| [`boot-and-kernel.md`](boot-and-kernel.md) | Kernel panic, GRUB recovery, emergency mode, initramfs. |
 | [`logging.md`](logging.md) | Runaway syslog, rsyslog issues, log management. |
-| [`storage-and-raid.md`](storage-and-raid.md) | Disk health, RAID rebuilds, filesystem errors. |
+| [`networking.md`](networking.md) | DNS resolution, connectivity, routing issues. |
+| [`nvidia.md`](nvidia.md) | Driver installation, GPU detection, CUDA, black screen fixes. |
+| [`performance.md`](performance.md) | High CPU, memory/OOM, disk I/O, load issues. |
 | [`security-and-selinux.md`](security-and-selinux.md) | Root password resets, SELinux AVCs, auth failures. |
+| [`services.md`](services.md) | systemd service failures, startup issues, dependencies. |
+| [`ssh.md`](ssh.md) | SSH authentication, connectivity, key issues. |
+| [`storage-and-raid.md`](storage-and-raid.md) | Disk health, RAID rebuilds, filesystem errors. |
 | [`misc.md`](misc.md) | Edge cases that do not fit other categories. |
 
 ## Authoring Checklist

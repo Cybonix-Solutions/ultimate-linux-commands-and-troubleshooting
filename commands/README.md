@@ -15,11 +15,13 @@ Curated command references grouped by topic, focusing on practical usage, flags,
 | File | Focus |
 |------|-------|
 | [`filesystem.md`](filesystem.md) | Disks, partitioning, mounts, quotas. |
-| [`networking.md`](networking.md) | Interfaces, routing, diagnostics, VPN tooling. |
-| [`processes-and-services.md`](processes-and-services.md) | Process inspection, systemd/service helpers. |
-| [`packages-and-repos.md`](packages-and-repos.md) | Package managers, repositories, build/install helpers. |
+| [`firewall.md`](firewall.md) | firewalld (RHEL), ufw (Ubuntu), iptables, nftables. |
+| [`networking.md`](networking.md) | Interfaces, routing, DNS, diagnostics, VPN tooling. |
+| [`packages-and-repos.md`](packages-and-repos.md) | apt, dnf, dpkg, rpm, snap, flatpak, repos. |
+| [`processes-and-services.md`](processes-and-services.md) | systemctl, journalctl, process inspection, debugging. |
+| [`text-processing.md`](text-processing.md) | sed, awk, cut, tr, sort, uniq, grep patterns. |
 | [`users-and-permissions.md`](users-and-permissions.md) | Accounts, groups, sudo, ACLs, SELinux helpers. |
-| [`misc.md`](misc.md) | Commands that do not neatly fit other categories. |
+| [`misc.md`](misc.md) | System info, hardware, environment, and misc tools. |
 
 ## Adding New Content
 
